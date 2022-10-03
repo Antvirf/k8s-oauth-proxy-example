@@ -1,0 +1,45 @@
+# deployment.yaml
+# must: configure env section with your OAuth app info
+# optional: configure authorization options to limit access
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+  name: oauth2-proxy
+spec:
+  replicas: 1
+  template:
+    metadata:
+    spec:
+      containers:
+      - args:
+        - --provider=github
+        - --upstream=file:///dev/null
+        - --http-address=0.0.0.0:4180
+        
+        # Authorization options
+        - --email-domain=* # allow only certain email domains
+        # - --github-org=asd # allow only certain GH organizations
+
+        env:
+        # your OAuth app client ID from GitHub
+        - name: OAUTH2_PROXY_CLIENT_ID
+          value: abc123 
+        
+        # your OAuth app client secret from GitHub
+        - name: OAUTH2_PROXY_CLIENT_SECRET
+          value: abc123
+        
+        # proxy secret, to be created by you, for example using the below snippet
+        # from the NGINX ingress docs:
+        # python -c 'import secrets,base64; print(base64.b64encode(base64.b64encode(secrets.token_bytes(16))))'
+        - name: OAUTH2_PROXY_COOKIE_SECRET
+          value: abc123
+
+        # using version 7.2.0
+        image: quay.io/oauth2-proxy/oauth2-proxy:v7.2.0
+        imagePullPolicy: Always
+        name: oauth2-proxy
+        ports:
+        - containerPort: 4180
+          protocol: TCP

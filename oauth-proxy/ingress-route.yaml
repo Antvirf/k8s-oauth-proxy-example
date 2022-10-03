@@ -1,0 +1,24 @@
+# ingress-route.yaml
+# configure secret name
+# host names can be set in the base kustomization.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-proxy
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - example-domain.com
+    secretName: your-tsl-secret
+  rules:
+  - host: example-domain.com
+    http:
+      paths:
+      - path: /oauth2
+        pathType: Prefix
+        backend:
+          service:
+            name: oauth2-proxy
+            port:
+              number: 4180
