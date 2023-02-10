@@ -1,0 +1,12 @@
+# service.yaml
+# no need to configure
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-proxy
+spec:
+  ports:
+  - name: http
+    port: 4180
+    protocol: TCP
+    targetPort: 4180
